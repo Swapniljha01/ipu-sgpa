@@ -50,4 +50,4 @@ https://swapniljha01.github.io/ipu-sgpa/
 **Swapnil Jha**
 
 ## ⭐ Support
-If this project helped you, consider giving it a ⭐ on GitHub 🙂
+If this project helped you, consider giving it a ⭐ on GitHub 🙂 
