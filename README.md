@@ -3,7 +3,7 @@
 A simple and accurate **IP University (GGSIPU)** SGPA & CGPA Calculator based on the **official grading system**.
 
 ## 🔗 Live Website
-(Will be available shortly via GitHub Pages)
+https://swapniljha01.github.io/ipu-sgpa/
 
 ## 📌 Features
 - ✅ Official IPU grading system
