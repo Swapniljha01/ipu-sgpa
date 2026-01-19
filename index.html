@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IPU SGPA & CGPA Calculator</title>
+
+<!-- PDF LIBRARY -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+:root{--bg:#f4f4f4;--card:#fff;--text:#000;}
+.dark{--bg:#0f172a;--card:#020617;--text:#e5e7eb;}
+body{margin:0;font-family:Arial;background:var(--bg);color:var(--text);padding:20px;}
+.box{max-width:720px;margin:auto;background:var(--card);padding:20px;border-radius:10px;}
+.sem{border:2px solid #ccc;padding:15px;border-radius:10px;margin-bottom:15px;}
+.sub{border:1px dashed #aaa;padding:10px;border-radius:8px;margin-bottom:10px;}
+input{width:100%;padding:8px;margin:5px 0;}
+button{width:100%;padding:10px;margin-top:8px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;}
+.add{background:#2563eb;color:#fff;}
+.calc{background:#16a34a;color:#fff;}
+.remove{background:#dc2626;color:#fff;}
+.darkbtn{background:#020617;color:#fff;}
+.pdf{background:#111827;color:#fff;}
+.result{margin-top:10px;font-weight:bold;}
+</style>
+</head>
+
+<body>
+<div class="box" id="pdfArea">
+<h2>IPU SGPA / CGPA Calculator</h2>
+
+<button class="darkbtn" onclick="toggleDark()">🌙 Toggle Dark Mode</button>
+
+<div id="sems"></div>
+
+<button class="add" onclick="addSem()">+ Add Semester</button>
+<button class="calc" onclick="calcCGPA()">Calculate CGPA</button>
+<button class="pdf" onclick="downloadPDF()">📄 Download PDF</button>
+
+<div class="result" id="final"></div>
+</div>
+
+<script>
+let semCount=0;
+
+function toggleDark(){
+  document.body.classList.toggle("dark");
+}
+
+function addSem(){
+  semCount++;
+  const s=document.createElement("div");
+  s.className="sem";
+  s.innerHTML=`
+    <h3>Semester ${semCount}</h3>
+    <div class="subs"></div>
+    <button class="add" onclick="addSub(this)">+ Add Subject</button>
+    <div class="result sgpa"></div>
+  `;
+  document.getElementById("sems").appendChild(s);
+  addSub(s.querySelector(".add"));
+}
+
+function addSub(btn){
+  const d=document.createElement("div");
+  d.className="sub";
+  d.innerHTML=`
+    <input type="number" placeholder="Marks">
+    <input type="number" placeholder="Credits">
+    <div>Grade: <b>-</b></div>
+    <button class="remove" onclick="this.parentElement.remove()">Remove</button>
+  `;
+  btn.previousElementSibling.appendChild(d);
+}
+
+function grade(m){
+  if(m>=90) return ["O",10];
+  if(m>=75) return ["A+",9];
+  if(m>=65) return ["A",8];
+  if(m>=55) return ["B+",7];
+  if(m>=50) return ["B",6];
+  if(m>=45) return ["C",5];
+  if(m>=40) return ["P",4];
+  return ["F",0];
+}
+
+function calcCGPA(){
+  let totalSGPA=0,sems=0;
+  document.querySelectorAll(".sem").forEach(sem=>{
+    let num=0,den=0,back=0;
+    sem.querySelectorAll(".sub").forEach(sub=>{
+      const m=+sub.children[0].value;
+      const c=+sub.children[1].value;
+      if(!m||!c) return;
+      const [g,gp]=grade(m);
+      sub.children[2].innerHTML=`Grade: <b>${g}</b>`;
+      den+=c;
+      if(m>=40) num+=gp*c;
+      else back++;
+    });
+    if(den){
+      const sg=(num/den).toFixed(2);
+      sem.querySelector(".sgpa").innerText=`SGPA: ${sg} | Backlogs: ${back}`;
+      totalSGPA+=+sg;sems++;
+    }
+  });
+  document.getElementById("final").innerText=
+    sems?`Final CGPA: ${(totalSGPA/sems).toFixed(2)}`:"";
+}
+
+function downloadPDF(){
+  html2pdf().from(document.getElementById("pdfArea"))
+    .save("IPU_SGPA_CGPA_Result.pdf");
+}
+
+addSem();
+</script>
+</body>
+</html>
+
